@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entraînement : Triangle rectangle et trigonométrie</title>
+    <!-- Chargement de Tailwind CSS pour une mise en page fluide et responsive -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Polices Inter et STIX Two Text pour un rendu géométrique et mathématique soigné -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=STIX+Two+Text:ital,wght@0,500;0,700;1,500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Configuration typographique générale */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
+        }
+
+        /* Police mathématique pour les notations de segments et d'angles */
+        .math-expr {
+            font-family: 'STIX Two Text', 'Times New Roman', serif;
+            letter-spacing: 0.015em;
+        }
+
+        /* Chapeau d'angle englobant les 3 lettres sans décaler la hauteur de ligne */
+        .angle-hat {
+            position: relative;
+            display: inline-block;
+            line-height: 1;
+            padding-top: 0.22em;
+        }
+
+        .angle-hat svg {
+            position: absolute;
+            top: -0.04em;
+            left: 5%;
+            width: 90%;
+            height: 0.34em;
+            overflow: visible;
+            pointer-events: none;
+        }
+
+        /* Effet feuille de papier */
+        .worksheet-card {
+            background: #ffffff;
+            box-shadow: 0 4px 20px -2px rgba(15, 23, 42, 0.06), 0 1px 3px rgba(15, 23, 42, 0.04);
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Styles spécifiques pour l'impression papier */
+        @media print {
+            body {
+                background-color: #ffffff !important;
+                color: #000000 !important;
+                padding: 0 !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+            .worksheet-card {
+                box-shadow: none !important;
+                border: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+                max-width: 100% !important;
+            }
+            .triangle-item {
+                break-inside: avoid;
+                border-color: #cbd5e1 !important;
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen py-6 px-4 sm:py-10 sm:px-6">
+
+    <!-- Conteneur principal centré -->
+    <main class="max-w-4xl mx-auto">
+        
+        <!-- Feuille d'exercice -->
+        <section class="worksheet-card rounded-2xl p-6 sm:p-10">
+            
+            <!-- En-tête de la feuille -->
+            <div class="border-b-2 border-slate-100 pb-5 mb-5 flex flex-col sm:flex-row sm:items-baseline sm:justify-between gap-2">
+                <div>
+                    <span class="no-print inline-block px-2.5 py-0.5 text-xs font-semibold tracking-wider uppercase text-indigo-700 bg-indigo-50 rounded-full mb-2">
+                        Mathématiques • Trigonométrie
+                    </span>
+                    <h1 class="text-lg sm:text-xl font-bold text-slate-900">
+                        Exercice d'entraînement — Vocabulaire du triangle rectangle
+                    </h1>
+                </div>
+                <span id="seed-badge" class="no-print text-xs font-mono text-slate-400 shrink-0">
+                    Question #0000
+                </span>
+            </div>
+
+            <!-- Barre d'outils placée juste sous la consigne (masquée à l'impression) -->
+            <div class="no-print flex flex-wrap items-center justify-between gap-2.5 mb-6">
+                <button id="btn-new" type="button" 
+                    class="inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-sm transition-colors cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Nouvel énoncé
+                </button>
+
+                <button id="btn-print" type="button" title="Imprimer la feuille"
+                    class="inline-flex items-center justify-center p-2.5 text-slate-600 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl shadow-sm transition-colors cursor-pointer"
+                    aria-label="Imprimer l'exercice">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Conteneur du triangle rectangle unique et des champs à compléter -->
+            <div id="exercises-container" class="max-w-2xl mx-auto">
+                <!-- Généré dynamiquement par JavaScript -->
+            </div>
+
+            <!-- Rappel méthodologique discret -->
+            <div class="max-w-2xl mx-auto mt-6 p-4 bg-slate-50 rounded-xl border border-slate-200/80 text-xs sm:text-sm text-slate-600 space-y-1.5">
+                <p class="font-semibold text-slate-700">Rappel de méthode :</p>
+                <ul class="list-disc list-inside space-y-1">
+                    <li><strong>1. L'hypoténuse :</strong> C'est le côté situé <em>en face de l'angle droit</em> (le plus long côté).</li>
+                    <li><strong>2. Le côté opposé :</strong> C'est le côté situé <em>en face de l'angle aigu étudié</em>.</li>
+                    <li><strong>3. Le côté adjacent :</strong> C'est le côté qui touche à la fois l'angle droit et l'angle aigu étudié.</li>
+                </ul>
+            </div>
+
+        </section>
+
+        <!-- Pied de page discret -->
+        <footer class="no-print mt-6 text-center text-xs text-slate-400">
+            N'oubliez pas les crochets [ ] pour noter un segment, puis cliquez sur « Vérifier mes réponses ».
+        </footer>
+
+    </main>
+
+    <script>
+        /**
+         * Générateur interactif d'exercices de repérage des côtés d'un triangle rectangle
+         * Affiche 1 triangle rectangle orienté aléatoirement avec vérification instantanée
+         */
+        (function () {
+            const exercisesContainer = document.getElementById('exercises-container');
+            const btnNew = document.getElementById('btn-new');
+            const btnPrint = document.getElementById('btn-print');
+            const seedBadge = document.getElementById('seed-badge');
+
+            let currentExercise = null;
+            let lastSignature = '';
+
+            // Banques de triplets de lettres classiques au collège pour nommer les sommets
+            const VERTEX_TRIPLETS = [
+                ['A', 'B', 'C'],
+                ['D', 'E', 'F'],
+                ['R', 'S', 'T'],
+                ['M', 'N', 'P'],
+                ['I', 'J', 'K'],
+                ['E', 'F', 'G'],
+                ['U', 'V', 'W'],
+                ['K', 'L', 'M'],
+                ['B', 'C', 'D'],
+                ['P', 'Q', 'R']
+            ];
+
+            function randomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+            function pickRandom(arr) {
+                return arr[randomInt(0, arr.length - 1)];
+            }
+
+            /**
+             * Formate le nom d'un segment par ordre alphabétique entre crochets (ex: [AB])
+             */
+            function formatSegment(p1, p2) {
+                const sorted = [p1, p2].sort();
+                return `[${sorted[0]}${sorted[1]}]`;
+            }
+
+            /**
+             * Formate le nom d'un angle avec un chapeau englobant les 3 lettres tout en restant aligné
+             */
+            function formatAngleHTML(leg1, vertex, leg2) {
+                const sides = [leg1, leg2].sort();
+                return `<span class="angle-hat">${sides[0]}${vertex}${sides[1]}<svg viewBox="0 0 36 10" preserveAspectRatio="none" aria-hidden="true"><polyline points="1,9 18,1.5 35,9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg></span>`;
+            }
+
+            /**
+             * Génère le SVG d'un triangle rectangle (R : sommet angle droit, A1 et A2 : sommets aigus)
+             * Avec centrage par boîte englobante pour garantir que les 3 lettres restent toujours visibles
+             */
+            function buildTriangleSVG(vertices, targetIsA1) {
+                const { rightVertex, acute1, acute2 } = vertices;
+
+                // Dimensions des deux côtés de l'angle droit (proportions variées)
+                const leg1Len = randomInt(100, 130);
+                const leg2Len = randomInt(72, 98);
+
+                // Coordonnées locales avant rotation : angle droit R en (0, 0), A1 sur +X, A2 sur -Y
+                const rawR = { x: 0, y: 0 };
+                const rawA1 = { x: leg1Len, y: 0 };
+                const rawA2 = { x: 0, y: -leg2Len };
+
+                // Angle de rotation aléatoire
+                const angleDeg = randomInt(0, 359);
+                const rad = (angleDeg * Math.PI) / 180;
+                const cosA = Math.cos(rad);
+                const sinA = Math.sin(rad);
+
+                function rotatePt(pt) {
+                    return {
+                        x: pt.x * cosA - pt.y * sinA,
+                        y: pt.x * sinA + pt.y * cosA
+                    };
+                }
+
+                const pR = rotatePt(rawR);
+                const pA1 = rotatePt(rawA1);
+                const pA2 = rotatePt(rawA2);
+
+                // Centrage par le milieu de la boîte englobante (garantit une marge uniforme tout autour)
+                const minX = Math.min(pR.x, pA1.x, pA2.x);
+                const maxX = Math.max(pR.x, pA1.x, pA2.x);
+                const minY = Math.min(pR.y, pA1.y, pA2.y);
+                const maxY = Math.max(pR.y, pA1.y, pA2.y);
+
+                const boxCenterX = (minX + maxX) / 2;
+                const boxCenterY = (minY + maxY) / 2;
+                const offsetX = 140 - boxCenterX;
+                const offsetY = 110 - boxCenterY;
+
+                const R = { x: pR.x + offsetX, y: pR.y + offsetY };
+                const A1 = { x: pA1.x + offsetX, y: pA1.y + offsetY };
+                const A2 = { x: pA2.x + offsetX, y: pA2.y + offsetY };
+
+                // Vecteurs unitaires le long des deux côtés de l'angle droit pour tracer le carré d'angle droit
+                const u1 = {
+                    x: (A1.x - R.x) / leg1Len,
+                    y: (A1.y - R.y) / leg1Len
+                };
+                const u2 = {
+                    x: (A2.x - R.x) / leg2Len,
+                    y: (A2.y - R.y) / leg2Len
+                };
+
+                const sqSize = 12;
+                const sqP1 = { x: R.x + u1.x * sqSize, y: R.y + u1.y * sqSize };
+                const sqP2 = { x: R.x + (u1.x + u2.x) * sqSize, y: R.y + (u1.y + u2.y) * sqSize };
+                const sqP3 = { x: R.x + u2.x * sqSize, y: R.y + u2.y * sqSize };
+
+                // Arc de cercle coloré pour repérer l'angle aigu étudié
+                const targetPt = targetIsA1 ? A1 : A2;
+                const otherAcutePt = targetIsA1 ? A2 : A1;
+
+                const vecToRight = {
+                    x: R.x - targetPt.x,
+                    y: R.y - targetPt.y
+                };
+                const lenToRight = Math.hypot(vecToRight.x, vecToRight.y);
+                const dirRight = { x: vecToRight.x / lenToRight, y: vecToRight.y / lenToRight };
+
+                const vecToHyp = {
+                    x: otherAcutePt.x - targetPt.x,
+                    y: otherAcutePt.y - targetPt.y
+                };
+                const lenToHyp = Math.hypot(vecToHyp.x, vecToHyp.y);
+                const dirHyp = { x: vecToHyp.x / lenToHyp, y: vecToHyp.y / lenToHyp };
+
+                const arcRadius = 24;
+                const arcStart = {
+                    x: targetPt.x + dirRight.x * arcRadius,
+                    y: targetPt.y + dirRight.y * arcRadius
+                };
+                const arcEnd = {
+                    x: targetPt.x + dirHyp.x * arcRadius,
+                    y: targetPt.y + dirHyp.y * arcRadius
+                };
+
+                const cross = dirRight.x * dirHyp.y - dirRight.y * dirHyp.x;
+                const sweepFlag = cross > 0 ? 1 : 0;
+
+                // Placement des étiquettes dans la direction opposée à la bissectrice intérieure du sommet
+                function placeLabel(vertexPt, adjPt1, adjPt2, labelText, isHighlighted) {
+                    const v1x = adjPt1.x - vertexPt.x;
+                    const v1y = adjPt1.y - vertexPt.y;
+                    const d1 = Math.hypot(v1x, v1y) || 1;
+
+                    const v2x = adjPt2.x - vertexPt.x;
+                    const v2y = adjPt2.y - vertexPt.y;
+                    const d2 = Math.hypot(v2x, v2y) || 1;
+
+                    let outX = -(v1x / d1 + v2x / d2);
+                    let outY = -(v1y / d1 + v2y / d2);
+                    const outLen = Math.hypot(outX, outY) || 1;
+                    outX /= outLen;
+                    outY /= outLen;
+
+                    const labelDist = 18;
+                    const lx = Math.max(16, Math.min(264, vertexPt.x + outX * labelDist));
+                    const ly = Math.max(16, Math.min(204, vertexPt.y + outY * labelDist));
+
+                    const fill = isHighlighted ? '#e11d48' : '#1e293b';
+                    const weight = isHighlighted ? '700' : '600';
+                    return `<text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" fill="${fill}" font-family="'STIX Two Text', serif" font-size="18" font-weight="${weight}" text-anchor="middle" dominant-baseline="central">${labelText}</text>`;
+                }
+
+                return `
+                    <svg viewBox="0 0 280 220" class="w-full max-w-[280px] h-auto mx-auto select-none" role="img" aria-label="Triangle rectangle ${rightVertex}${acute1}${acute2}">
+                        <!-- Secteur angulaire coloré pour l'angle étudié -->
+                        <path d="M ${targetPt.x.toFixed(1)} ${targetPt.y.toFixed(1)} L ${arcStart.x.toFixed(1)} ${arcStart.y.toFixed(1)} A ${arcRadius} ${arcRadius} 0 0 ${sweepFlag} ${arcEnd.x.toFixed(1)} ${arcEnd.y.toFixed(1)} Z"
+                              fill="rgba(225, 29, 72, 0.14)" />
+                        <path d="M ${arcStart.x.toFixed(1)} ${arcStart.y.toFixed(1)} A ${arcRadius} ${arcRadius} 0 0 ${sweepFlag} ${arcEnd.x.toFixed(1)} ${arcEnd.y.toFixed(1)}"
+                              fill="none" stroke="#e11d48" stroke-width="2.2" />
+
+                        <!-- Symbole de l'angle droit -->
+                        <polyline points="${sqP1.x.toFixed(1)},${sqP1.y.toFixed(1)} ${sqP2.x.toFixed(1)},${sqP2.y.toFixed(1)} ${sqP3.x.toFixed(1)},${sqP3.y.toFixed(1)}"
+                                  fill="none" stroke="#475569" stroke-width="1.6" />
+
+                        <!-- Triangle rectangle -->
+                        <polygon points="${R.x.toFixed(1)},${R.y.toFixed(1)} ${A1.x.toFixed(1)},${A1.y.toFixed(1)} ${A2.x.toFixed(1)},${A2.y.toFixed(1)}"
+                                 fill="rgba(248, 250, 252, 0.35)" stroke="#1e293b" stroke-width="2.2" stroke-linejoin="round" />
+
+                        <!-- Noms des 3 sommets -->
+                        ${placeLabel(R, A1, A2, rightVertex, false)}
+                        ${placeLabel(A1, R, A2, acute1, targetIsA1)}
+                        ${placeLabel(A2, R, A1, acute2, !targetIsA1)}
+                    </svg>
+                `;
+            }
+
+            /**
+             * Vérifie strictement la notation d'un segment : crochets obligatoires [ED] ou [DE]
+             */
+            function parseStudentSegment(rawInput) {
+                if (!rawInput) return { valid: false, canonical: '', missingBrackets: false };
+                const trimmed = rawInput.trim().toUpperCase();
+
+                // Notation valide d'un segment : [AB] ou [BA]
+                const bracketMatch = trimmed.match(/^\[\s*([A-Z])\s*([A-Z])\s*\]$/);
+                if (bracketMatch) {
+                    const l1 = bracketMatch[1];
+                    const l2 = bracketMatch[2];
+                    if (l1 === l2) return { valid: false, canonical: '', missingBrackets: false };
+                    const sorted = [l1, l2].sort();
+                    return {
+                        valid: true,
+                        canonical: `[${sorted[0]}${sorted[1]}]`,
+                        missingBrackets: false
+                    };
+                }
+
+                // Détection de deux lettres écrites sans crochets (ex: AB ou (AB)) pour donner un indice précis
+                const noBracketMatch = trimmed.match(/^\(?\s*([A-Z])\s*([A-Z])\s*\)?$/);
+                if (noBracketMatch && noBracketMatch[1] !== noBracketMatch[2]) {
+                    return { valid: false, canonical: '', missingBrackets: true };
+                }
+
+                return { valid: false, canonical: '', missingBrackets: false };
+            }
+
+            /**
+             * Génère un unique triangle rectangle avec ses 3 réponses attendues
+             */
+            function generateSingleTriangle() {
+                let triplet, rightVertex, acute1, acute2, targetIsA1, signature;
+
+                do {
+                    triplet = pickRandom(VERTEX_TRIPLETS);
+                    const shuffled = [...triplet].sort(() => Math.random() - 0.5);
+                    rightVertex = shuffled[0];
+                    acute1 = shuffled[1];
+                    acute2 = shuffled[2];
+                    targetIsA1 = Math.random() < 0.5;
+                    signature = `${triplet.join('')}_${rightVertex}_${targetIsA1 ? acute1 : acute2}`;
+                } while (signature === lastSignature);
+
+                lastSignature = signature;
+
+                const targetVertex = targetIsA1 ? acute1 : acute2;
+                const oppositeVertex = targetIsA1 ? acute2 : acute1;
+
+                const svgHTML = buildTriangleSVG({ rightVertex, acute1, acute2 }, targetIsA1);
+                const triangleName = triplet.join('');
+                const angleHTML = formatAngleHTML(rightVertex, targetVertex, oppositeVertex);
+
+                const hypotenuseSeg = formatSegment(acute1, acute2);
+                const oppositeSeg = formatSegment(rightVertex, oppositeVertex);
+                const adjacentSeg = formatSegment(rightVertex, targetVertex);
+
+                return {
+                    triangleName,
+                    rightVertex,
+                    angleHTML,
+                    svgHTML,
+                    hypotenuseSeg,
+                    oppositeSeg,
+                    adjacentSeg
+                };
+            }
+
+            /**
+             * Vérifie les 3 champs saisis par l'élève et affiche un retour visuel clair
+             */
+            function checkAnswers() {
+                if (!currentExercise) return;
+
+                const fields = [
+                    {
+                        key: 'hyp',
+                        inputEl: document.getElementById('input-hyp'),
+                        statusEl: document.getElementById('status-hyp'),
+                        expected: currentExercise.hypotenuseSeg
+                    },
+                    {
+                        key: 'opp',
+                        inputEl: document.getElementById('input-opp'),
+                        statusEl: document.getElementById('status-opp'),
+                        expected: currentExercise.oppositeSeg
+                    },
+                    {
+                        key: 'adj',
+                        inputEl: document.getElementById('input-adj'),
+                        statusEl: document.getElementById('status-adj'),
+                        expected: currentExercise.adjacentSeg
+                    }
+                ];
+
+                let correctCount = 0;
+
+                fields.forEach(field => {
+                    const parsed = parseStudentSegment(field.inputEl.value);
+
+                    // Réinitialise les bordures
+                    field.inputEl.classList.remove(
+                        'border-slate-300', 'border-emerald-500', 'bg-emerald-50/50',
+                        'border-rose-500', 'bg-rose-50/50', 'border-amber-400', 'bg-amber-50/40'
+                    );
+
+                    if (!field.inputEl.value.trim()) {
+                        field.inputEl.classList.add('border-amber-400', 'bg-amber-50/40');
+                        field.statusEl.innerHTML = `<span class="text-amber-700 font-medium">À compléter → Réponse : <strong class="math-expr text-sm sm:text-base text-slate-900">${field.expected}</strong></span>`;
+                    } else if (parsed.valid && parsed.canonical === field.expected) {
+                        correctCount++;
+                        field.inputEl.classList.add('border-emerald-500', 'bg-emerald-50/50');
+                        field.statusEl.innerHTML = `<span class="text-emerald-700 font-semibold">✓ Correct !</span>`;
+                    } else {
+                        field.inputEl.classList.add('border-rose-500', 'bg-rose-50/50');
+                        field.statusEl.innerHTML = `<span class="text-rose-600 font-semibold">✗ Réponse : <strong class="math-expr text-sm sm:text-base text-slate-900">${field.expected}</strong></span>`;
+                    }
+                });
+
+                const globalFeedback = document.getElementById('global-feedback');
+                globalFeedback.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-800', 'border-emerald-200', 'bg-amber-50', 'text-amber-800', 'border-amber-200');
+
+                if (correctCount === 3) {
+                    globalFeedback.classList.add('bg-emerald-50', 'text-emerald-800', 'border-emerald-200');
+                    globalFeedback.innerHTML = `<strong>Bravo !</strong> Les trois côtés sont parfaitement identifiés.`;
+                } else {
+                    globalFeedback.classList.add('bg-amber-50', 'text-amber-800', 'border-amber-200');
+                    globalFeedback.innerHTML = `<strong>${correctCount} / 3</strong> bonne${correctCount > 1 ? 's' : ''} réponse${correctCount > 1 ? 's' : ''}. Observe la correction puis clique sur « Nouvel énoncé » pour t'entraîner à nouveau.`;
+                }
+            }
+
+            /**
+             * Génère et affiche un nouveau triangle rectangle interactif
+             */
+            function renderNewWorksheet() {
+                currentExercise = generateSingleTriangle();
+
+                seedBadge.textContent = `Question #${randomInt(1000, 9999)}`;
+
+                // Injection de la carte unique avec figure à gauche, champs au centre et bouton Vérifier en bas
+                exercisesContainer.innerHTML = `
+                    <div class="triangle-item p-5 sm:p-6 rounded-2xl bg-slate-50/70 border border-slate-200/90">
+                        <div class="flex flex-wrap items-center justify-between gap-2 pb-3 mb-4 border-b border-slate-200/80">
+                            <span class="text-sm sm:text-base font-semibold text-slate-800">
+                                Triangle <span class="math-expr text-lg">${currentExercise.triangleName}</span> rectangle en <span class="math-expr text-lg">${currentExercise.rightVertex}</span>
+                            </span>
+                            <span class="text-sm sm:text-base text-slate-700">
+                                Angle étudié : <strong class="math-expr text-lg text-rose-600 font-bold">${currentExercise.angleHTML}</strong>
+                            </span>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-12 gap-5 items-center">
+                            <!-- Figure géométrique -->
+                            <div class="sm:col-span-5 flex justify-center">
+                                ${currentExercise.svgHTML}
+                            </div>
+
+                            <!-- Formulaire de complétion -->
+                            <div class="sm:col-span-7 space-y-3.5">
+                                <!-- Champ Hypoténuse -->
+                                <div>
+                                    <label for="input-hyp" class="block text-sm font-medium text-slate-700 mb-1">
+                                        Hypoténuse du triangle :
+                                    </label>
+                                    <div class="flex flex-wrap items-center gap-2.5">
+                                        <input id="input-hyp" type="text" maxlength="8" autocomplete="off" spellcheck="false"
+                                            class="math-expr w-28 px-3 py-2 text-center text-base sm:text-lg font-bold uppercase text-slate-900 bg-white border-2 border-slate-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors">
+                                        <span id="status-hyp" class="text-xs sm:text-sm"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Champ Côté opposé -->
+                                <div>
+                                    <label for="input-opp" class="block text-sm font-medium text-slate-700 mb-1">
+                                        Côté opposé à l'angle <span class="math-expr text-rose-600 font-bold">${currentExercise.angleHTML}</span> :
+                                    </label>
+                                    <div class="flex flex-wrap items-center gap-2.5">
+                                        <input id="input-opp" type="text" maxlength="8" autocomplete="off" spellcheck="false"
+                                            class="math-expr w-28 px-3 py-2 text-center text-base sm:text-lg font-bold uppercase text-slate-900 bg-white border-2 border-slate-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors">
+                                        <span id="status-opp" class="text-xs sm:text-sm"></span>
+                                    </div>
+                                </div>
+
+                                <!-- Champ Côté adjacent -->
+                                <div>
+                                    <label for="input-adj" class="block text-sm font-medium text-slate-700 mb-1">
+                                        Côté adjacent à l'angle <span class="math-expr text-rose-600 font-bold">${currentExercise.angleHTML}</span> :
+                                    </label>
+                                    <div class="flex flex-wrap items-center gap-2.5">
+                                        <input id="input-adj" type="text" maxlength="8" autocomplete="off" spellcheck="false"
+                                            class="math-expr w-28 px-3 py-2 text-center text-base sm:text-lg font-bold uppercase text-slate-900 bg-white border-2 border-slate-300 rounded-xl focus:outline-none focus:border-indigo-500 transition-colors">
+                                        <span id="status-adj" class="text-xs sm:text-sm"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Bouton Vérification placé à la fin du formulaire -->
+                        <div class="no-print mt-5 pt-4 border-t border-slate-200/80 flex flex-wrap items-center justify-between gap-2">
+                            <p class="text-xs text-slate-400">
+                                Crochets sur clavier AZERTY : <kbd class="px-1.5 py-0.5 text-[11px] font-mono bg-white border border-slate-200 rounded text-slate-600">Alt Gr</kbd> + <kbd class="px-1.5 py-0.5 text-[11px] font-mono bg-white border border-slate-200 rounded text-slate-600">(</kbd> / <kbd class="px-1.5 py-0.5 text-[11px] font-mono bg-white border border-slate-200 rounded text-slate-600">)</kbd>
+                            </p>
+                            <button id="btn-check" type="button" 
+                                class="inline-flex items-center justify-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 rounded-xl shadow-sm transition-colors cursor-pointer ml-auto">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                </svg>
+                                Vérifier mes réponses
+                            </button>
+                        </div>
+
+                        <!-- Bandeau de bilan après vérification -->
+                        <div id="global-feedback" class="hidden mt-4 px-4 py-2.5 rounded-xl border text-sm text-center"></div>
+                    </div>
+                `;
+
+                document.getElementById('btn-check').addEventListener('click', checkAnswers);
+
+                // Permet la validation avec la touche Entrée dans les 3 champs
+                ['input-hyp', 'input-opp', 'input-adj'].forEach(id => {
+                    const el = document.getElementById(id);
+                    el.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter') {
+                            e.preventDefault();
+                            checkAnswers();
+                        }
+                    });
+                });
+            }
+
+            // Écouteurs d'événements
+            btnNew.addEventListener('click', renderNewWorksheet);
+            btnPrint.addEventListener('click', () => window.print());
+
+            // Génération initiale
+            renderNewWorksheet();
+        })();
+    </script>
+</body>
+</html>
